@@ -83,8 +83,8 @@ module Ai4r
       # 
       # 1. The fitness function is evaluated for each individual, providing fitness values
       # 2. The population is sorted by descending fitness values.
-      # 3. The fitness values ar then normalized. (Highest fitness gets 1, lowest fitness gets 0). The normalized value is stored in the "normalized_fitness" attribute of the chromosomes.
-      # 4. A random number R is chosen. R is between 0 and the accumulated normalized value (all the normalized fitness values added togheter).
+      # 3. The fitness values are then normalized. (Highest fitness gets 1, lowest fitness gets 0). The normalized value is stored in the "normalized_fitness" attribute of the chromosomes.
+      # 4. A random number R is chosen. R is between 0 and the accumulated normalized value (all the normalized fitness values added together).
       # 5. The selected individual is the first one whose accumulated normalized value (its is normalized value plus the normalized values of the chromosomes prior it) greater than R.
       # 6. We repeat steps 4 and 5, 2/3 times the population size.    
       def selection
@@ -93,10 +93,10 @@ module Ai4r
         worst_fitness = @population.last.fitness
         acum_fitness = 0
         if best_fitness-worst_fitness > 0
-        @population.each do |chromosome| 
-          chromosome.normalized_fitness = (chromosome.fitness - worst_fitness)/(best_fitness-worst_fitness)
-          acum_fitness += chromosome.normalized_fitness
-        end
+	        @population.each do |chromosome| 
+	          chromosome.normalized_fitness = (chromosome.fitness - worst_fitness)/(best_fitness-worst_fitness)
+	          acum_fitness += chromosome.normalized_fitness
+	        end
         else
           @population.each { |chromosome| chromosome.normalized_fitness = 1}  
         end
@@ -222,7 +222,7 @@ module Ai4r
       def self.reproduce(a, b)
         data_size = @@costs[0].length
         available = []
-        0.upto(data_size-1) { |n| available << n }
+        0.upto(data_size-1) { |n| available << n } # TODO these preceding 3 lines should be a separate method (remove duplication)
         token = a.data[0]
         spawn = [token]
         available.delete(token)
@@ -251,8 +251,10 @@ module Ai4r
       def self.seed
         data_size = @@costs[0].length
         available = []
-        0.upto(data_size-1) { |n| available << n }
+        0.upto(data_size-1) { |n| available << n } # TODO these preceding 3 lines should be a separate method (remove duplication)
         seed = []
+        # The first location should always be the current location: 0
+        seed << available.delete_at(0)
         while available.length > 0 do 
           index = rand(available.length)
           seed << available.delete_at(index)
