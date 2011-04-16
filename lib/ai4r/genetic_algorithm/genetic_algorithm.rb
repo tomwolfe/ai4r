@@ -261,9 +261,21 @@ module Ai4r
         end
         return Chromosome.new(seed)
       end
+      
+      # goes through each point and if a delivery is positioned before a pickup
+      # the two points are swapped
+      def swap
+      	
+      end
 
       def self.set_cost_matrix(costs)
         @@costs = costs
+      end
+      
+      # pass in the order of when each delivery is due since in most cases that will
+      # produce a better solution
+      def self.set_global_precedence_vector(global_precedence)
+        @@global_precedence = global_precedence
       end
     end
 
