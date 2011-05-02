@@ -220,9 +220,7 @@ module Ai4r
       # In this case, we have implemented edge recombination, wich is the 
       # most used reproduction algorithm for the Travelling salesman problem.
       def self.reproduce(a, b)
-        data_size = @@costs[0].length
-        available = []
-        0.upto(data_size-1) { |n| available << n } # TODO these preceding 3 lines should be a separate method (remove duplication)
+        available = @@available
         token = a.data[0]
         spawn = [token]
         available.delete(token)
@@ -249,9 +247,7 @@ module Ai4r
       # use some problem domain knowledge, to generate a 
       # (probably) better initial solution.
       def self.seed
-        data_size = @@costs[0].length
-        available = []
-        0.upto(data_size-1) { |n| available << n } # TODO these preceding 3 lines should be a separate method (remove duplication)
+        available = @@available
         seed = []
         # The first location should always be the current location: 0
         seed << available.delete_at(0)
@@ -262,20 +258,30 @@ module Ai4r
         return Chromosome.new(seed)
       end
       
+      def calc_available
+        available = []
+        0.upto(@@costs[0].length-1) { |n| available << n }
+        available
+      end
+      
       # goes through each point and if a delivery is positioned before a pickup
       # the two points are swapped
-      def swap
-      	
+      def swap(a)
+      	for i in 1..a.size-2 do
+	      if i.even?
+	      	next
+	      end
+	      if a.index(i) > a.index(i+1)
+	        tmp = a[a.index(i)]
+	        a[a.index(i)] = a[a.index(i+1)]
+	        a[a.index(i+1)] = tmp
+	      end
+		end
       end
 
       def self.set_cost_matrix(costs)
         @@costs = costs
-      end
-      
-      # pass in the order of when each delivery is due since in most cases that will
-      # produce a better solution
-      def self.set_global_precedence_vector(global_precedence)
-        @@global_precedence = global_precedence
+        @@available = calc_available
       end
     end
 
